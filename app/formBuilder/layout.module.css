@@ -1,0 +1,11 @@
+.page{
+    display: flex;
+    gap: 20px;
+}
+.page .left{
+    width: 70%;
+    background-color: white;
+}
+.page .right{
+    width: 25%;
+}

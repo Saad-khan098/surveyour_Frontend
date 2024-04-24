@@ -1,0 +1,66 @@
+.form *{
+    box-sizing: border-box;
+}
+.form{
+    display: flex;
+    flex-direction: column;
+    /* gap: 10px; */
+    width: 90%;
+    margin: auto;
+    padding: 20px 0 20px 0;
+    min-height: 100vh;
+    /* background-color: yellow; */
+}
+.form > div{
+    /* background-color: green; */
+    border: none;
+}
+.form > button{
+    margin: 0;
+    padding: 0;
+    background-color: transparent;
+    border: none;
+}
+.form .formElementContainer{
+    /* background-color: red; */
+    width: 100%;
+    /* padding: 00px 0 30px 0; */
+    /* border-radius: 10px; */
+}
+.form .formElementContainer .dropArea{
+    width: 100%;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.form .formElementContainer .dropArea div.overlay{
+    width: 100%;
+    height: 1px;
+    background-color: black;
+}
+.form button{
+    width: 100%;
+}
+.form .formElementContainer > input{
+    width: 100%;
+}
+
+.form .formElementContainer.overlay{
+    /* background-color: red; */
+    border-bottom: solid black 2px;
+}
+
+.form .formElement{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    width: 100%;
+    background-color: #eee;
+    border: solid black 1px;
+    padding: 10px 10px 10px 10px;
+}
+.form .formElement > p{
+    font-size: 18px;
+    font-weight: 500;
+}
