@@ -2,9 +2,10 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios';
 import getCookie from '@/utils/getCookie'
-import CreateForm from './CreateForm';
 import { useRouter } from 'next/navigation';
-import FormCard from '../Cards/formCard';
+import PieCard from '../Cards/pieCard';
+import Button from '@mui/joy/Button';
+
 
 
 const authToken = getCookie('authToken');
@@ -36,7 +37,9 @@ export default function page() {
   console.log(forms);
   return (
     <div>
-      <h1>Forms</h1>
+      <Button size="lg" color="success">
+      See All Responses 
+      </Button>
       <div>
         {
           forms?.forms?.map(elem => {
@@ -48,18 +51,9 @@ export default function page() {
           })
         }
       </div>
-      < CreateForm />
-      <h1> Your Forms:</h1>
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px' }}>
-      < FormCard /> 
-      < FormCard />
-      < FormCard />
-      < FormCard />
-      < FormCard />
-      < FormCard />
-      < FormCard />
-      < FormCard />
-      </div>
+      <h1> Statistics: </h1>
+      <h3> Total Responses: 37</h3>
+      < PieCard />
     </div>
   )
 }
