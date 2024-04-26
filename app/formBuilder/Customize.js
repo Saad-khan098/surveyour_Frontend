@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import TextCustomizer from './FormCustomizors/Text';
 import styles from './customize.module.css';
+import ClearIcon from '@mui/icons-material/Clear';
 
-export default function Customize({ element, index, changeName, changeOption ,optionAdd }) {
+export default function Customize({ element, index, changeName, changeOption ,optionAdd, deleteOption }) {
 
   const [question, setquestion] = useState(element.question);
 
@@ -34,13 +35,16 @@ export default function Customize({ element, index, changeName, changeOption ,op
             {
               element.option.map((option, i) => {
                 return (
-                  <Option data={option} index={index} changeOption={changeOption} optionIndex={i} key={i} />
+                  <Option data={option} index={index} changeOption={changeOption} optionIndex={i} key={i} deleteOption={deleteOption} />
                 )
               })
             }
 
             <input type="text" value={addOption} onChange={(e)=>{setaddOption(e.target.value)}}/>
-            <button onClick={()=>{optionAdd(index,addOption)}}>add option</button>
+            <button onClick={()=>{
+              optionAdd(index,addOption);
+              setaddOption('');
+              }}>add option</button>
           </div>
         }
 
@@ -49,7 +53,7 @@ export default function Customize({ element, index, changeName, changeOption ,op
   )
 }
 
-function Option({ data, index, changeOption, optionIndex }) {
+function Option({ data, index, changeOption, optionIndex, deleteOption }) {
   const [option, setoption] = useState(data)
 
   useEffect(() => {
@@ -63,6 +67,7 @@ function Option({ data, index, changeOption, optionIndex }) {
     <div>
       <input type="text" value={option} onChange={(e) => { setoption(e.target.value) }} />
       <button onClick={change}>change</button>
+      <ClearIcon onClick={()=>{deleteOption(index,optionIndex)}}/>
     </div>
   )
 }

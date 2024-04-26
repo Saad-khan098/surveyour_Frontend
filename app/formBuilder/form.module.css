@@ -51,11 +51,12 @@
     border-bottom: solid black 2px;
 }
 
-.form .formElement{
+.formElement{
     display: flex;
     flex-direction: column;
     align-items: start;
     width: 100%;
+    min-width: 400px;
     background-color: #eee;
     border: solid black 1px;
     padding: 10px 10px 10px 10px;

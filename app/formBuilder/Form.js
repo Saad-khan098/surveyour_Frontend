@@ -1,64 +1,102 @@
 "use client"
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './layout.module.css';
 import ElementTypes from './ElementTypes';
 import FormElements from './FormElements';
-import { DndContext } from '@dnd-kit/core';
+import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { Droppable } from './Droppable';
 import Text from './FormElements/Text';
 import Numerical from './FormElements/Numerical';
 import Customize from './Customize';
+import Pagination from '@mui/material/Pagination';
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
+import getCookie from '@/utils/getCookie'
+import { Button } from '@mui/material';
 
-export default function Form({ formData, elementTypes }) {
+const authToken = getCookie('authToken');
+
+
+const types = [
+  <Text data={{ question: 'sfsfsfs' }} />,
+  <Text data={{ question: 'sfsfsfs' }} />,
+  <Text data={{ question: 'sfsfsfs' }} />,
+  <Text data={{ question: 'sfsfsfs' }} />,
+  <Text data={{ question: 'sfsfsfs' }} />,
+]
+
+export default function Form({ formData, elementTypes, formId }) {
+
+
+
+  const router = useRouter();
+
 
   const [form, setform] = useState(formData);
   const [overlayIndex, setoverlayIndex] = useState(null);
   const [selectElement, setselectElement] = useState(null);
-
-  const [randomState, setrandomState] = useState(null);
-
   const [newId, setnewId] = useState(1);
+  const [draggingIndex, setdraggingIndex] = useState(-1);
+  const isFirstRender = useRef(true); // Ref to track initial mount
 
 
-  function changeName(index,question){
-    setform(prev=>{
+  const [page, setpage] = useState(1);
+
+  const [changes, setchanges] = useState(false);
+
+
+
+  function changeName(index, question) {
+    setform(prev => {
       let newArr = [...prev.elements];
       newArr[index].question = question;
-      return {...prev, elements: newArr}
+      return { ...prev, elements: newArr }
     })
+    setchanges(true);
   }
 
-  function changeOption(index,optionIndex,option){
-    setform(prev=>{
+  function changeOption(index, optionIndex, option) {
+    setform(prev => {
       const newArr = [...prev.elements];
       newArr[index].option[optionIndex] = option;
-      return {...prev, elements: newArr};
+      return { ...prev, elements: newArr };
     })
+    setchanges(true)
   }
 
-  function optionAdd(index,option){
+  function optionAdd(index, option) {
     let newArr = [...form.elements]
     newArr[index].option.push(option);
-    setform({...form, elements: newArr})
+    setform({ ...form, elements: newArr })
+    setchanges(true)
+  }
+
+  function deleteOption(index, optionIndex) {
+    let newArr = [...form.elements];
+    newArr[index].option.splice(optionIndex, 1);
+    setform({ ...form, elements: newArr });
+    setchanges(true);
   }
 
   function handleDragEnd(event) {
     setoverlayIndex(null);
 
     if (event.active.data.current.type === 'new') {
-      let elementType = elementTypes.findIndex(elem=>elem.name == event.active.id);
+      let elementType = elementTypes.findIndex(elem => elem.name == event.active.id);
       const newElement = {
+        isNew: true,
         _id: newId,
         elementType: elementType,
         question: `New Question (${newId})`,
         required: true,
-        option: elementType <= 2?null:['option1', 'option2']
+        option: elementType <= 2 ? null : ['option1', 'option2']
       };
       if (event.over && event.over.id === 'droppable') {
         setform(prev => {
           return { ...prev, elements: [...prev.elements, newElement] }
         })
+        setchanges(true);
       }
       else if (event.over) {
         let index = event?.over?.data?.current?.index;
@@ -68,24 +106,28 @@ export default function Form({ formData, elementTypes }) {
           newArray.splice(index, 0, newElement);
           return { ...prev, elements: newArray };
         });
+        setchanges(true);
       }
-      setnewId(prev=>prev+1);
+      setnewId(prev => prev + 1);
     }
-    else if(event.active.data.current.type === 'change'){
-      
+    else if (event.active.data.current.type === 'change') {
+
       const isValidIndex = event?.over?.data?.current?.index !== undefined && event?.over?.data?.current?.index !== null;
-      if(!isValidIndex || event.over.id == event.active.id)return;
-      
+      if (!isValidIndex || event.over.id == event.active.id) return;
+
       let index = event.over.data.current.index;
       let index2 = event.active.data.current.index;
 
-      setform(prev=>{
+      if(index2 > index)index++;
+
+      setform(prev => {
         const elementToRemove = prev.elements[index2];
         const newArr = [...prev.elements];
-        newArr.splice(index2, 1); // Remove element at index2
-        newArr.splice(index + 1, 0, elementToRemove); // Insert element after index
+        newArr.splice(index2, 1);
+        newArr.splice(index, 0, elementToRemove);
         return { ...prev, elements: newArr };
       })
+      setchanges(true);
     }
   }
 
@@ -95,31 +137,100 @@ export default function Form({ formData, elementTypes }) {
     setselectElement(index);
 
 
-    if(event.over == null || event.over.id == 'droppable' || event?.over?.data?.current?.index == event?.active?.data?.current?.index){
+    if (event.over == null || event.over.id == 'droppable' || event?.over?.data?.current?.index == event?.active?.data?.current?.index) {
       setoverlayIndex(null);
       return;
     }
-    
+
     index = event?.over?.data?.current?.index;
-    if(event?.over?.data?.current?.index != event?.active?.data?.current?.index)
-    setoverlayIndex(index);
+    if (event?.over?.data?.current?.index != event?.active?.data?.current?.index)
+      setoverlayIndex(index);
+  }
+  function handleDragStart(event) {
+    let elementType = elementTypes.findIndex(elem => elem.name == event.active.id);
+    setdraggingIndex(elementType);
   }
 
+  async function getForm(pageNo) {
+    try {
+      console.log('getting form');
+      const data = await axios.get(`http://localhost:3001/form/${formId}?page=${pageNo}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      })
+      console.log(data);
+      setform(data.data);
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
+
+
+  function handlePageChange(e) {
+    if (page == e.target.innerText) return;
+    getForm(e.target.innerText)
+    setpage(e.target.innerText);
+
+  }
+  function addPage() {
+    axios.put(`http://localhost:3001/form/addPage/${formId}`,
+      {
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      }
+    );
+    setform(prev => {
+      return { ...prev, form: { ...prev.form, pages: prev.form.pages + 1 } }
+    })
+  }
+
+  async function saveChanges(){
+    console.log('saving changes');
+    const data = await axios.put(`http://localhost:3001/form/save/${formId}`,
+      {
+        form: form
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      }
+    );
+    console.log(data);
+  }
+
+  if (!form) return;
+
   return (
-    <DndContext onDragEnd={handleDragEnd} onDragOver={hadnleDragOver}>
+    <DndContext onDragEnd={handleDragEnd} onDragOver={hadnleDragOver} onDragStart={handleDragStart}>
+      <DragOverlay>
+        {types[draggingIndex]}
+      </DragOverlay>
       <div className={styles.page} >
         <div className={styles.left}>
           <Droppable>
             <FormElements data={form} setform={setform} elementTypes={elementTypes} overlayIndex={overlayIndex} />
           </Droppable>
+          <div className={styles.pageination}>
+            <Pagination count={form.form.pages} page={parseInt(page)} onChange={handlePageChange} hidePrevButton hideNextButton />
+            <div className={styles.new} onClick={addPage}>+</div>
+          </div>
         </div>
         <div className={styles.right}>
+          <div className={styles.buttons}>
+            <Button variant='contained' disabled={!changes} onClick={saveChanges}>Save Changes</Button>
+          </div>
           <ElementTypes elementTypes={elementTypes} />
           {
             typeof selectElement == 'number'
             &&
             <div className={styles.customize}>
-              <Customize element={form.elements[selectElement]} index={selectElement} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd}/>
+              <Customize element={form.elements[selectElement]} index={selectElement} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd} deleteOption={deleteOption} />
             </div>
           }
         </div>

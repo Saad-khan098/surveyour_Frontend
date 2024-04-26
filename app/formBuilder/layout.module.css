@@ -9,3 +9,17 @@
 .page .right{
     width: 25%;
 }
+
+ .pageination{
+    display: flex;
+    align-items: center;
+}
+.pagination .new{
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+}
+.pageination .new:hover{
+    background-color: #eee;
+}

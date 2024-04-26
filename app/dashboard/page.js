@@ -5,6 +5,8 @@ import getCookie from '@/utils/getCookie'
 import CreateForm from './CreateForm';
 import { useRouter } from 'next/navigation';
 
+
+
 const authToken = getCookie('authToken');
 
 
@@ -12,7 +14,6 @@ export default function page() {
   const [forms, setforms] = useState(null);
   
   const router = useRouter();
-
   const getForms = async function () {
     console.log(authToken);
     try {

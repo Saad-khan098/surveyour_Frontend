@@ -63,7 +63,7 @@ export default function SignIn() {
       const decodedToken = jwt.decode(token);
       console.log(decodedToken);
 
-      router.push('/dashboard');
+      router.push('/Dashboard');
     }
 
     catch(error){
