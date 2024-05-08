@@ -56,6 +56,15 @@ export default function Form({ formData, elementTypes, formId }) {
     setchanges(true);
   }
 
+  function changeRequired(index, required){
+    setform(prev => {
+      let newArr = [...prev.elements];
+      newArr[index].required = required;
+      return { ...prev, elements: newArr }
+    })
+    setchanges(true);
+  }
+
   function changeOption(index, optionIndex, option) {
     setform(prev => {
       const newArr = [...prev.elements];
@@ -189,11 +198,14 @@ export default function Form({ formData, elementTypes, formId }) {
     })
   }
 
+  console.log(form);
+
   async function saveChanges(){
     console.log('saving changes');
     const data = await axios.put(`http://localhost:3001/form/save/${formId}`,
       {
-        form: form
+        form: form,
+        page: page
       },
       {
         headers: {
@@ -201,7 +213,22 @@ export default function Form({ formData, elementTypes, formId }) {
         }
       }
     );
-    console.log(data);
+    setchanges(false);
+  }
+
+  async function publishForm(){
+    console.log('publishing form');
+    const data = await axios.put(`http://localhost:3001/form/publish/${formId}`,
+      {
+        form: form,
+        page: page
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      }
+    );
   }
 
   if (!form) return;
@@ -224,13 +251,14 @@ export default function Form({ formData, elementTypes, formId }) {
         <div className={styles.right}>
           <div className={styles.buttons}>
             <Button variant='contained' disabled={!changes} onClick={saveChanges}>Save Changes</Button>
+            <Button variant={'contained'} onClick={publishForm}>Publish Form</Button>
           </div>
           <ElementTypes elementTypes={elementTypes} />
           {
             typeof selectElement == 'number'
             &&
             <div className={styles.customize}>
-              <Customize element={form.elements[selectElement]} index={selectElement} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd} deleteOption={deleteOption} />
+              <Customize element={form.elements[selectElement]} index={selectElement} changeRequired={changeRequired} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd} deleteOption={deleteOption} />
             </div>
           }
         </div>

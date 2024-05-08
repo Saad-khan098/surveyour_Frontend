@@ -54,6 +54,7 @@
 .formElement{
     display: flex;
     flex-direction: column;
+    gap: 20px;
     align-items: start;
     width: 100%;
     min-width: 400px;
@@ -64,4 +65,14 @@
 .form .formElement > p{
     font-size: 18px;
     font-weight: 500;
+}
+.formElement .options{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.formElement .option{
+    width: 100%;
+    background-color: lightblue;
+    padding: 5px 0 5px 0
 }

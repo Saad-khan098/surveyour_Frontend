@@ -2,10 +2,16 @@ import React, { useState, useRef, useEffect } from 'react';
 import TextCustomizer from './FormCustomizors/Text';
 import styles from './customize.module.css';
 import ClearIcon from '@mui/icons-material/Clear';
+import Switch from '@mui/material/Switch';
+import { FormGroup, FormControlLabel } from '@mui/material';
 
-export default function Customize({ element, index, changeName, changeOption ,optionAdd, deleteOption }) {
+
+export default function Customize({ element, index, changeName, changeOption, optionAdd, deleteOption, changeRequired }) {
 
   const [question, setquestion] = useState(element.question);
+  const [required, setrequired] = useState(element.required);
+
+  console.log({ required })
 
 
   const changeQuestion = function () {
@@ -13,8 +19,8 @@ export default function Customize({ element, index, changeName, changeOption ,op
   };
   useEffect(() => {
     setquestion(element.question);
+    setrequired(element.required);
   }, [element])
-
 
   const [addOption, setaddOption] = useState(null);
 
@@ -27,8 +33,23 @@ export default function Customize({ element, index, changeName, changeOption ,op
           <button onClick={changeQuestion}>change</button>
         </div>
 
+        <div>
+          <FormGroup>
+            <FormControlLabel control={
+              <Switch checked={required} onChange={
+                (e) => { 
+                  console.log(e.target.checked);
+                  changeRequired(index,!element.required);
+                  setrequired(e.target.checked);
+                }}
+              />
+            } 
+            label="Required" />
+          </FormGroup>
+        </div>
+
         {
-          element.option&&
+          element.option &&
 
           <div className={styles.options}>
             <h3>Options</h3>
@@ -40,11 +61,11 @@ export default function Customize({ element, index, changeName, changeOption ,op
               })
             }
 
-            <input type="text" value={addOption} onChange={(e)=>{setaddOption(e.target.value)}}/>
-            <button onClick={()=>{
-              optionAdd(index,addOption);
+            <input type="text" value={addOption} onChange={(e) => { setaddOption(e.target.value) }} />
+            <button onClick={() => {
+              optionAdd(index, addOption);
               setaddOption('');
-              }}>add option</button>
+            }}>add option</button>
           </div>
         }
 
@@ -67,7 +88,7 @@ function Option({ data, index, changeOption, optionIndex, deleteOption }) {
     <div>
       <input type="text" value={option} onChange={(e) => { setoption(e.target.value) }} />
       <button onClick={change}>change</button>
-      <ClearIcon onClick={()=>{deleteOption(index,optionIndex)}}/>
+      <ClearIcon onClick={() => { deleteOption(index, optionIndex) }} />
     </div>
   )
 }

@@ -4,6 +4,8 @@ import Text from './FormElements/Text'
 import Numerical from './FormElements/Numerical'
 import Date from './FormElements/Date'
 import Radio from './FormElements/Radio'
+import Checkbox from './FormElements/Checkbox'
+import Dropdown from './FormElements/Dropdown'
 import { Draggable } from './Draggable'
 import { Droppable } from './Droppable'
 
@@ -14,6 +16,8 @@ export default function FormElement({data, elementTypes,overlay,index}) {
     <Numerical data={data} />,
     <Date data={data} />,
     <Radio data={data} />,
+    <Checkbox data={data} />,
+    <Dropdown data={data} />,
   ]
 
   
