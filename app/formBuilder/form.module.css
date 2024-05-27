@@ -5,12 +5,31 @@
     display: flex;
     flex-direction: column;
     /* gap: 10px; */
-    width: 90%;
+    width: 100%;
     margin: auto;
     padding: 20px 0 20px 0;
-    min-height: 100vh;
     /* background-color: yellow; */
+    /* min-height: 100vh; */
+    /* background-color: white; */
 }
+.form .top{
+    /* background-color: yellow; */
+    height: 80px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.form .top > div{
+    height: 1px;
+    background-color: black;
+    width: 100%;
+}
+
+.form .top.active{
+    background-color: black !important;
+}
+
 .form > div{
     /* background-color: green; */
     border: none;
@@ -58,9 +77,11 @@
     align-items: start;
     width: 100%;
     min-width: 400px;
-    background-color: #eee;
-    border: solid black 1px;
-    padding: 10px 10px 10px 10px;
+    background-color: #fff;
+    /* border: solid black 1px; */
+    padding: 20px 20px 20px 20px;
+    /* box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px; */
+    border-radius: 20px;
 }
 .form .formElement > p{
     font-size: 18px;

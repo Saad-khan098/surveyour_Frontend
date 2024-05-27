@@ -2,35 +2,35 @@
 
 import React from 'react'
 import styles from './form.module.css'
-import { Formik } from 'formik'
+import { Formik, Field, Form } from 'formik'
+import { MenuItem, FormControl, InputLabel, Select, Button } from '@mui/material';
 
-export default function Form({ form, elementTypes, formId }) {
-    console.log(form);
-
+export default function MyForm({ form, elementTypes, formId }) {
     let initialValues = {};
     form.elements.forEach(element => {
         initialValues[element._id] = '';
     });
-    console.log(initialValues)
     return (
         <div className={styles.page}>
             <div className={styles.form}>
+                <div className={styles.element}>
+
+                </div>
                 <Formik
                     initialValues={initialValues}
                     validate={values => {
                         const errors = {};
-                        console.log('validating');
-                        form.elements.forEach(elem=>{
-                            if(elem.required){
-                                if(!values[elem._id]){
-                                    errors[elem._id] = 'Required'
+                        form.elements.forEach(elem => {
+                            if (elem.required) {
+                                console.log(values[elem.id])
+                                if (!values[elem.id]) {
+                                    errors[elem.id] = 'Required'
                                 }
                             }
                         })
                         return errors;
                     }}
                     onSubmit={(values, { setSubmitting }) => {
-                        console.log('submitting');
                         setTimeout(() => {
                             alert(JSON.stringify(values, null, 2));
                             setSubmitting(false);
@@ -48,20 +48,134 @@ export default function Form({ form, elementTypes, formId }) {
                     }) => (
                         <form onSubmit={handleSubmit}>
                             {
-                                form.elements.map((elem) => (
-                                    <div className={styles.element}>
-                                        <p>{elem.question}</p>
-                                        <input
-                                            key={elem._id}  // Add a unique key for each input
-                                            type="text"
-                                            name={elem._id}
-                                            onChange={handleChange}
-                                            onBlur={handleBlur}
-                                            value={values[elem._id]}  // Use the correct field from values
-                                        />
-                                        <p>{errors[elem._id]}</p>
-                                    </div>
-                                ))
+                                form.elements.map((elem, index) => {
+                                    if (elem.elementType == 0) {
+                                        return (
+                                            <div className={styles.element} key={elem._id}>
+                                                <p>{elem.question}</p>
+                                                <input
+                                                    type="text"
+                                                    name={elem._id}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    value={values[elem._id]}
+                                                />
+                                                {errors && errors[elem._id] && touched[elem._id] && <p>{errors[elem._id]}</p>}
+                                            </div>
+                                        )
+                                    }
+
+                                    if (elem.elementType == 1) {
+                                        return (
+                                            <div className={styles.element} key={elem._id}>
+                                                <p>{elem.question}</p>
+                                                <input
+                                                    type="number"
+                                                    name={elem._id}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    value={values[elem._id]}
+                                                />
+                                                {errors && errors[elem._id] && touched[elem._id] && <p>{errors[elem._id]}</p>}
+                                            </div>
+                                        )
+                                    }
+                                    if (elem.elementType == 2) {
+                                        return (
+                                            <div className={styles.element} key={elem._id}>
+                                                <p>{elem.question}</p>
+                                                <input
+                                                    type="date"
+                                                    name={elem._id}
+                                                    onChange={handleChange}
+                                                    onBlur={handleBlur}
+                                                    value={values[elem._id]}
+                                                />
+                                                {errors && errors[elem._id] && touched[elem._id] && <p>{errors[elem._id]}</p>}
+                                            </div>
+                                        )
+                                    }
+                                    if (elem.elementType == 3) {
+                                        return (
+                                            <div className={styles.element} key={elem._id}>
+                                                <p>{elem.question}</p>
+                                                {
+                                                    elem.option.map((option, i) => {
+                                                        return (
+                                                            <div>
+                                                                <label htmlFor={option}>{option}</label>
+                                                                <input
+                                                                    id={option}
+                                                                    type="radio"
+                                                                    name={elem._id}
+                                                                    value={option}
+                                                                    onChange={handleChange}
+                                                                    onBlur={handleBlur}
+                                                                />
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                                {errors && errors[elem._id] && touched[elem._id] && <p>{errors[elem._id]}</p>}
+                                            </div>
+                                        );
+                                    }
+                                    if (elem.elementType === 4) {
+                                        return (
+                                            <div className={styles.element} key={elem._id}>
+                                                <p>{elem.question}</p>
+                                                {
+                                                    elem.option.map((option, i) => {
+                                                        return (
+
+                                                            <div>
+                                                                <label htmlFor={option}>{option}</label>
+                                                                <input
+                                                                    id={option}
+                                                                    type="checkbox"
+                                                                    name={elem._id}
+                                                                    value={option}
+                                                                    onChange={handleChange}
+                                                                    onBlur={handleBlur}
+                                                                />
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+                                                {errors && errors[elem._id] && touched[elem._id] && <p>{errors[elem._id]}</p>}
+                                            </div>
+                                        );
+                                    }
+
+                                    if (elem.elementType === 5) {
+                                        return (
+                                            <div className={styles.element} key={elem._id}>
+                                                <p>{elem.question}</p>
+
+                                                <FormControl className={styles.dropdown}>
+                                                    <InputLabel>{'Select'}</InputLabel>
+                                                    <Select
+                                                        name={elem._id}
+                                                        value={values[elem._id]}
+                                                        onChange={handleChange}
+                                                        onBlur={handleBlur}
+                                                    >
+                                                        {elem.option.map((option) => (
+                                                            <MenuItem key={option} value={option}>
+                                                                {option}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Select>
+                                                    {errors[elem._id] && touched[elem._id] && (
+                                                        <p>{errors[elem._id]}</p>
+                                                    )}
+                                                </FormControl>
+                                            </div>
+                                        )
+                                    }
+
+
+                                })
                             }
                             <button type="submit" disabled={isSubmitting}>
                                 Submit

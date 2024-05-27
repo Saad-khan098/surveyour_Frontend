@@ -13,7 +13,7 @@ export default function RadioComponent({ data }) {
             <p>{data.question}</p>
 
 
-            <Accordion defaultExpanded style={{width: '100%', maxWidth: '300px'}}>
+            <Accordion defaultExpanded style={{width: '100%', maxWidth: '300px', boxShadow: 'none'}}>
                 <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls="panel1-content"

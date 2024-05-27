@@ -1,4 +1,6 @@
 function getCookie(name) {
+  try{
+
     const cookieString = document.cookie; // Get the cookie string
     const cookies = cookieString.split(';'); // Split the string into individual cookies
     
@@ -13,5 +15,9 @@ function getCookie(name) {
     }
     // If cookie not found, return null
     return null;
+  }
+  catch(e){
+    return null;
+  }
   }
   export default getCookie

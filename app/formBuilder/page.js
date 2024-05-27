@@ -3,6 +3,7 @@ import Form from './Form';
 import { redirect } from "next/navigation"
 import getCookie from '@/utils/getCookie';
 import { cookies } from 'next/headers'
+import BaseLayout from '../Components/BaseLayout';
 
 
 
@@ -31,6 +32,8 @@ export default async function FormBuilder({ searchParams }) {
   var elementTypes = await fetch('http://localhost:3001/element/elementTypes').then(data => data.json());
 
   return (
-    <Form formData={formData} elementTypes={elementTypes} formId={formId}></Form>
+    <BaseLayout>
+      <Form formData={formData} elementTypes={elementTypes} formId={formId}></Form>
+    </BaseLayout>
   )
 }

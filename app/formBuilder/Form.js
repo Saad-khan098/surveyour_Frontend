@@ -15,7 +15,6 @@ import { useRouter } from 'next/navigation';
 import getCookie from '@/utils/getCookie'
 import { Button } from '@mui/material';
 
-const authToken = getCookie('authToken');
 
 
 const types = [
@@ -27,8 +26,8 @@ const types = [
 ]
 
 export default function Form({ formData, elementTypes, formId }) {
-
-
+  
+  const authToken = getCookie('authToken');
 
   const router = useRouter();
 
@@ -45,7 +44,18 @@ export default function Form({ formData, elementTypes, formId }) {
 
   const [changes, setchanges] = useState(false);
 
+  useEffect(() => {
+    const handleDocumentClick = (event) => {
+      setselectElement(false);
+    };
 
+    // Add event listener
+    document.addEventListener('click', handleDocumentClick);
+
+    return () => {
+      document.removeEventListener('click', handleDocumentClick);
+    };
+  }, []);
 
   function changeName(index, question) {
     setform(prev => {
@@ -103,7 +113,7 @@ export default function Form({ formData, elementTypes, formId }) {
       };
       if (event.over && event.over.id === 'droppable') {
         setform(prev => {
-          return { ...prev, elements: [...prev.elements, newElement] }
+          return { ...prev, elements: [newElement, ...prev.elements] }
         })
         setchanges(true);
       }
@@ -146,11 +156,18 @@ export default function Form({ formData, elementTypes, formId }) {
     setselectElement(index);
 
 
-    if (event.over == null || event.over.id == 'droppable' || event?.over?.data?.current?.index == event?.active?.data?.current?.index) {
+    console.log(event);
+    console.log(event.over)
+    if (event.over == null) {
+      console.log('match');
       setoverlayIndex(null);
       return;
     }
-
+    console.log('checking');
+    if(event.over.id == 'droppable' && event.active?.data?.current?.type == 'new'){
+      setoverlayIndex('droppable');
+      return;
+    }
     index = event?.over?.data?.current?.index;
     if (event?.over?.data?.current?.index != event?.active?.data?.current?.index)
       setoverlayIndex(index);
