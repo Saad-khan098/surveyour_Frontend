@@ -1,59 +1,31 @@
-'use client'
-import React, { useState, useEffect } from 'react'
-import axios from 'axios';
-import getCookie from '@/utils/getCookie'
-import { useRouter } from 'next/navigation';
+'use client';
+import React from 'react';
+import {Button, Container, Typography } from '@mui/material';
+import NumCard from '../Cards/numCard';
 import PieCard from '../Cards/pieCard';
-import Button from '@mui/joy/Button';
 
+const CombinedResponses = () => {
+  const numQuestion = 'How satisfied are you with our service?';
+  const numAverage = 4.2;
 
+  const pieQuestion = 'Which features do you use the most?';
+  const pieData = {
+    labels: ['Feature A', 'Feature B', 'Feature C'],
+    values: [10, 20, 30],
+  };
 
-const authToken = getCookie('authToken');
-
-
-export default function page() {
-  const [forms, setforms] = useState(null);
-  
-  const router = useRouter();
-
-  const getForms = async function () {
-    console.log(authToken);
-    try {
-      const recipes = await axios.get('http://localhost:3001/form/all', {
-        headers: {
-          Authorization: `Bearer ${authToken}`
-        }
-      });
-      setforms(recipes.data);
-    }
-    catch (e) {
-      console.log(e);
-    }
-  }
-  useEffect(() => {
-    getForms();
-  }, [])
-
-  console.log(forms);
   return (
-    <div>
-      <Button size="lg" color="success">
-      See All Responses 
-      </Button>
-      <div>
-        {
-          forms?.forms?.map(elem => {
-            return (
-              <div key={elem._id} onClick={()=>{router.push(`/formBuilder?formId=${elem._id}`)}}>
-                <p>{elem.name}</p>
-              </div>
-            )
-          })
-        }
-      </div>
-      <h1> Statistics: </h1>
-      <h3> Total Responses: 37</h3>
-      < PieCard />
-    </div>
-  )
-}
+    <Container>
+      <Button variant="contained" color="primary">
+          View All Responses
+        </Button>
+        <Typography variant="h4" component="h1">
+        Response Statistics:
+        </Typography>
+      <NumCard question={numQuestion} average={numAverage} />
+      <PieCard question={pieQuestion} data={pieData} />
+    </Container>
+  );
+};
+
+export default CombinedResponses;
