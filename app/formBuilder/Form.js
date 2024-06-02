@@ -8,25 +8,25 @@ import { DndContext, DragOverlay } from '@dnd-kit/core';
 import { Droppable } from './Droppable';
 import Text from './FormElements/Text';
 import Numerical from './FormElements/Numerical';
+import Date from './FormElements/Date';
+import Checkbox from './FormElements/Checkbox';
+import Radio from './FormElements/Radio';
+import Dropdown from './FormElements/Dropdown';
 import Customize from './Customize';
 import Pagination from '@mui/material/Pagination';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 import getCookie from '@/utils/getCookie'
 import { Button } from '@mui/material';
-
-
-
-const types = [
-  <Text data={{ question: 'sfsfsfs' }} />,
-  <Text data={{ question: 'sfsfsfs' }} />,
-  <Text data={{ question: 'sfsfsfs' }} />,
-  <Text data={{ question: 'sfsfsfs' }} />,
-  <Text data={{ question: 'sfsfsfs' }} />,
-]
+import SuccessAlert from '../Components/SuccessAlert';
+import EditIcon from '@mui/icons-material/Edit';
+import FormEdit from './FormEdit';
 
 export default function Form({ formData, elementTypes, formId }) {
+
   
+  
+
   const authToken = getCookie('authToken');
 
   const router = useRouter();
@@ -37,7 +37,16 @@ export default function Form({ formData, elementTypes, formId }) {
   const [selectElement, setselectElement] = useState(null);
   const [newId, setnewId] = useState(1);
   const [draggingIndex, setdraggingIndex] = useState(-1);
-  const isFirstRender = useRef(true); // Ref to track initial mount
+  const isFirstRender = useRef(true); 
+
+  const types = [
+    <Text data={{ question: `New Question` }} />,
+    <Numerical data={{ question: `New Question` }} />,
+    <Date data={{ question: `New Question` }} />,
+    <Radio data={{ question: `New Question`, option:['option1', 'option2'] }} />,
+    <Checkbox data={{ question: `New Question`, option:['option1', 'option2'] }} />,
+    <Dropdown data={{ question: `New Question`, option:['option1', 'option2'] }} />,
+  ]
 
 
   const [page, setpage] = useState(1);
@@ -46,7 +55,12 @@ export default function Form({ formData, elementTypes, formId }) {
 
   useEffect(() => {
     const handleDocumentClick = (event) => {
-      setselectElement(false);
+      console.log('sdjkjkasdbjkjkascjk')
+      console.log(event.target.tagName);
+      const interactiveElements = ['BUTTON', 'INPUT', 'TEXTAREA', 'SELECT', 'A', 'LABEL', "SPAN", "svg", "path"];
+      if (!interactiveElements.includes(event.target.tagName)) {
+        setselectElement(null);
+      }
     };
 
     // Add event listener
@@ -65,8 +79,16 @@ export default function Form({ formData, elementTypes, formId }) {
     })
     setchanges(true);
   }
+  function deleteElement(index){
+    setform(prev => {
+      let newArr = [...prev.elements];
+      newArr[index].isDeleted = true;
+      return { ...prev, elements: newArr }
+    })
+    setchanges(true);
+  }
 
-  function changeRequired(index, required){
+  function changeRequired(index, required) {
     setform(prev => {
       let newArr = [...prev.elements];
       newArr[index].required = required;
@@ -107,7 +129,7 @@ export default function Form({ formData, elementTypes, formId }) {
         isNew: true,
         _id: newId,
         elementType: elementType,
-        question: `New Question (${newId})`,
+        question: `New Question`,
         required: true,
         option: elementType <= 2 ? null : ['option1', 'option2']
       };
@@ -137,7 +159,7 @@ export default function Form({ formData, elementTypes, formId }) {
       let index = event.over.data.current.index;
       let index2 = event.active.data.current.index;
 
-      if(index2 > index)index++;
+      if (index2 > index) index++;
 
       setform(prev => {
         const elementToRemove = prev.elements[index2];
@@ -147,6 +169,7 @@ export default function Form({ formData, elementTypes, formId }) {
         return { ...prev, elements: newArr };
       })
       setchanges(true);
+      setselectElement(null);
     }
   }
 
@@ -164,7 +187,7 @@ export default function Form({ formData, elementTypes, formId }) {
       return;
     }
     console.log('checking');
-    if(event.over.id == 'droppable' && event.active?.data?.current?.type == 'new'){
+    if (event.over.id == 'droppable' && event.active?.data?.current?.type == 'new') {
       setoverlayIndex('droppable');
       return;
     }
@@ -217,7 +240,7 @@ export default function Form({ formData, elementTypes, formId }) {
 
   console.log(form);
 
-  async function saveChanges(){
+  async function saveChanges() {
     console.log('saving changes');
     const data = await axios.put(`http://localhost:3001/form/save/${formId}`,
       {
@@ -231,11 +254,11 @@ export default function Form({ formData, elementTypes, formId }) {
       }
     );
     setchanges(false);
+    setopen3(true);
   }
 
-  async function publishForm(){
-    console.log('publishing form');
-    const data = await axios.put(`http://localhost:3001/form/publish/${formId}`,
+  async function publishForm(type) {
+    const data = await axios.put(`http://localhost:3001/form/publish/${formId}?type=${type}`,
       {
         form: form,
         page: page
@@ -246,41 +269,115 @@ export default function Form({ formData, elementTypes, formId }) {
         }
       }
     );
+    setform({...form, form:{...form.form, public: type==-1?false:true}})
+    if(type == -1){
+      setopen2(true);
+    }
+    else{
+      setopen(true);
+    }
+  }
+
+  const [open, setopen] = useState(false);
+
+  const handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setopen(false);
+  };
+  const [open2, setopen2] = useState(false);
+
+  const handleClose2 = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setopen2(false);
+  };
+  const [open3, setopen3] = useState(false);
+
+  const handleClose3 = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setopen3(false);
+  };
+
+
+  const [openFormEdit, setopenFormEdit] = useState(false);
+
+  function handleFormEditOpen(){
+    setopenFormEdit(true);
+  }
+  function handleFormEditClose(){
+    setopenFormEdit(false);
   }
 
   if (!form) return;
 
   return (
-    <DndContext onDragEnd={handleDragEnd} onDragOver={hadnleDragOver} onDragStart={handleDragStart}>
-      <DragOverlay>
-        {types[draggingIndex]}
-      </DragOverlay>
-      <div className={styles.page} >
-        <div className={styles.left}>
-          <Droppable>
-            <FormElements data={form} setform={setform} elementTypes={elementTypes} overlayIndex={overlayIndex} />
-          </Droppable>
-          <div className={styles.pageination}>
-            <Pagination count={form.form.pages} page={parseInt(page)} onChange={handlePageChange} hidePrevButton hideNextButton />
-            <div className={styles.new} onClick={addPage}>+</div>
-          </div>
-        </div>
-        <div className={styles.right}>
-          <div className={styles.buttons}>
-            <Button variant='contained' disabled={!changes} onClick={saveChanges}>Save Changes</Button>
-            <Button variant={'contained'} onClick={publishForm}>Publish Form</Button>
-          </div>
-          <ElementTypes elementTypes={elementTypes} />
-          {
-            typeof selectElement == 'number'
-            &&
-            <div className={styles.customize}>
-              <Customize element={form.elements[selectElement]} index={selectElement} changeRequired={changeRequired} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd} deleteOption={deleteOption} />
+    <>
+      <DndContext onDragEnd={handleDragEnd} onDragOver={hadnleDragOver} onDragStart={handleDragStart}>
+        <DragOverlay>
+          {types[draggingIndex]}
+        </DragOverlay>
+        <div className={styles.page} >
+          <div className={styles.left}>
+            <div className={styles.top}>
+              <h1>{form.form.name}</h1>
+              <EditIcon onClick={handleFormEditOpen} />
             </div>
-          }
+            <Droppable>
+              {
+                form.elements.length == 0
+                &&
+                <div className={`${styles.drag} ${overlayIndex=='droppable'? styles.overlay: ''}`}>
+                  <img src="/drag-and-drop.png" alt="" />
+                </div>
+              }
+              <FormElements data={form} setform={setform} elementTypes={elementTypes} overlayIndex={overlayIndex} selectElement={selectElement} />
+            </Droppable>
+            <div className={styles.pageination}>
+              <Pagination count={form.form.pages} page={parseInt(page)} onChange={handlePageChange} hidePrevButton hideNextButton />
+              <div className={styles.new} onClick={addPage}>+</div>
+            </div>
+          </div>
+          <div className={styles.right}>
+            <div className={styles.buttons}>
+              <Button variant='contained' color="success" disabled={!changes} onClick={saveChanges}>Save Changes</Button>
+              {
+                form.form.public?
+                <Button variant={'contained'} onClick={()=>{publishForm(-1)}}>Unpublish Form</Button>
+                :
+                <Button variant={'contained'} onClick={()=>{publishForm(1)}}>Publish Form</Button>
+              }
+            </div>
+            {
+               selectElement == null
+               &&
+              <ElementTypes elementTypes={elementTypes} />
+            }
+            {
+              typeof selectElement == 'number'
+              &&
+              <div >
+                <Customize element={form.elements[selectElement]} index={selectElement} changeRequired={changeRequired} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd} deleteOption={deleteOption} deleteElement={deleteElement}/>
+              </div>
+            }
+          </div>
         </div>
-      </div>
-    </DndContext>
+      </DndContext>
+
+      <SuccessAlert open={open} handleClose={handleClose} msg={"Successfully published form"}/>
+      <SuccessAlert open={open2} handleClose={handleClose2} msg={"Successfully unpublished form"}/>
+      <SuccessAlert open={open3} handleClose={handleClose3} msg={"Successfully saved changes"}/>
+
+
+      <FormEdit open={openFormEdit} handleFormEditOpen={handleFormEditOpen} handleFormEditClose={handleFormEditClose} form={form} setform={setform} setchanges={setchanges}/>
+    </>
 
   )
 }

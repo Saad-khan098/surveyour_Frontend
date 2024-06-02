@@ -7,9 +7,9 @@ export default function ElementTypes({ elementTypes }) {
         <div className={styles.elements}>
 
             {
-                elementTypes.map(elem => {
+                elementTypes.map((elem,i) => {
                     return (
-                        <Element data={elem} key={elem.name}/>
+                        <Element data={elem} key={elem.name} index={i}/>
                     )
                 })
             }

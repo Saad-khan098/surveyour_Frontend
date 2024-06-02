@@ -10,7 +10,8 @@ import { Draggable } from './Draggable'
 import { Droppable } from './Droppable'
 
 
-export default function FormElement({data, elementTypes,overlay,index}) {
+export default function FormElement({data, elementTypes,overlay,index, selected}) {
+  
   const types = [
     <Text data={data}/>,
     <Numerical data={data} />,
@@ -20,9 +21,10 @@ export default function FormElement({data, elementTypes,overlay,index}) {
     <Dropdown data={data} />,
   ]
 
+
   
   return (
-    <div className={`${styles.formElementContainer}`}>
+    <div className={`${styles.formElementContainer} ${selected?styles.selected: ''}`}>
 
             <Droppable id={data._id} index={index}>
       {types[data.elementType]}

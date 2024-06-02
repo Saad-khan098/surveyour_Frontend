@@ -14,7 +14,7 @@
 }
 .form .top{
     /* background-color: yellow; */
-    height: 80px;
+    height: 40px;
     width: 100%;
     display: flex;
     justify-content: center;
@@ -69,7 +69,10 @@
     /* background-color: red; */
     border-bottom: solid black 2px;
 }
-
+.formElementContainer.selected .formElement{
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    transform: scale(1.04);
+}
 .formElement{
     display: flex;
     flex-direction: column;

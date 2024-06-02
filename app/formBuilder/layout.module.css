@@ -7,6 +7,30 @@
     width: 65%;
     /* background-color: white; */
 }
+.page .left .top{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+.page .left .top svg{
+    cursor: pointer;
+}
+.page .left .drag{
+    background-color: white;
+    border-radius: 20px;
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 40vh;
+}
+.page .left .drag.overlay{
+    background-color: #777;
+}
+.page .left .drag img{
+    width: 100px;
+    height: 100px;
+}
 .page .right{
     position: sticky;
     width: 25%;
@@ -14,6 +38,13 @@
     right: 0;
     /* background-color: white; */
     height: 100vh;
+    overflow: auto;
+}
+.page .right .buttons{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
 }
 
  .pageination{
