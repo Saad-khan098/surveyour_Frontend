@@ -1,0 +1,103 @@
+.page .elements{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 30px;
+}
+.page{
+    width: 90%;
+    height: 100%;
+    min-height: 100vh;
+    /* background-color: #ADD8E6; */
+    padding: 30px 0 0 0;
+    margin: auto;
+}
+.page form{
+    margin: auto;
+    width: 90%;
+    max-width: 700px;
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+.page .elements{
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.page .element{
+    width: 100%;
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    border: solid rgba(0,0,0,0.1) 1px;
+}
+.page .element .top{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.page .element .top .error{
+    color: red;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.page .buttons{
+    display: flex;
+    justify-content: space-between;
+}
+.element .stats{
+    padding: 20px;
+}
+.element .stats .top{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: start;
+    margin-top: 30px;
+}
+.element .stats .top > div{
+    width: 100%;
+    max-width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 50px;
+}
+.element .stats .top > div.percent{
+    max-width: 300px;
+    margin-top: 20px;
+}
+.element .stats .multiple{
+    margin-top: 30px;
+}
+.stats .multiple .data{
+    display: flex;
+    flex-direction: column;
+    margin-top: 30px;
+}
+.stats .multiple .data h3{
+    margin-bottom: 20px;
+}
+
+.stats .multiple .data > div{
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: space-between;
+    padding: 10px 0 10px 0;
+    max-width: 170px;
+}
+.stats .multiple .data > div:not(:last-of-type){
+    border-bottom: solid rgba(0,0,0,0.1) 1px;
+}
+.stats .multiple .data > div > p:last-of-type{
+    font-weight: 550;
+}
+
+

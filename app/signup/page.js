@@ -50,10 +50,11 @@ export default function SignIn() {
     let obj = {
       email: data.get('email'),
       password: data.get('password'),
+      name: data.get('name')
     }
 
     try {
-      let response = await axios.post('http://localhost:3001/auth/signup', { "email": obj.email, "password": obj.password })
+      let response = await axios.post('http://localhost:3001/auth/signup', { "email": obj.email, "password": obj.password, "name": obj.name })
       router.push('/login');
     }
 
@@ -94,6 +95,16 @@ export default function SignIn() {
             Sign up
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="Name"
+              name="name"
+              autoComplete="name"
+              autoFocus
+            />
             <TextField
               margin="normal"
               required

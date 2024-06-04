@@ -24,8 +24,8 @@ import FormEdit from './FormEdit';
 
 export default function Form({ formData, elementTypes, formId }) {
 
-  
-  
+
+
 
   const authToken = getCookie('authToken');
 
@@ -37,15 +37,15 @@ export default function Form({ formData, elementTypes, formId }) {
   const [selectElement, setselectElement] = useState(null);
   const [newId, setnewId] = useState(1);
   const [draggingIndex, setdraggingIndex] = useState(-1);
-  const isFirstRender = useRef(true); 
+  const isFirstRender = useRef(true);
 
   const types = [
     <Text data={{ question: `New Question` }} />,
     <Numerical data={{ question: `New Question` }} />,
     <Date data={{ question: `New Question` }} />,
-    <Radio data={{ question: `New Question`, option:['option1', 'option2'] }} />,
-    <Checkbox data={{ question: `New Question`, option:['option1', 'option2'] }} />,
-    <Dropdown data={{ question: `New Question`, option:['option1', 'option2'] }} />,
+    <Radio data={{ question: `New Question`, option: ['option1', 'option2'] }} />,
+    <Checkbox data={{ question: `New Question`, option: ['option1', 'option2'] }} />,
+    <Dropdown data={{ question: `New Question`, option: ['option1', 'option2'] }} />,
   ]
 
 
@@ -79,7 +79,7 @@ export default function Form({ formData, elementTypes, formId }) {
     })
     setchanges(true);
   }
-  function deleteElement(index){
+  function deleteElement(index) {
     setform(prev => {
       let newArr = [...prev.elements];
       newArr[index].isDeleted = true;
@@ -238,8 +238,6 @@ export default function Form({ formData, elementTypes, formId }) {
     })
   }
 
-  console.log(form);
-
   async function saveChanges() {
     console.log('saving changes');
     const data = await axios.put(`http://localhost:3001/form/save/${formId}`,
@@ -269,12 +267,29 @@ export default function Form({ formData, elementTypes, formId }) {
         }
       }
     );
-    setform({...form, form:{...form.form, public: type==-1?false:true}})
-    if(type == -1){
+    setform({ ...form, form: { ...form.form, public: type == -1 ? false : true } })
+    if (type == -1) {
       setopen2(true);
     }
-    else{
+    else {
       setopen(true);
+    }
+  }
+
+  async function deletePage() {
+    try {
+
+      const data = await axios.delete(`http://localhost:3001/form/page/${formId}?page=${page}`,
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          }
+        }
+      )
+    window.location.reload();
+    }
+    catch (e) {
+      alert('some error occurred');
     }
   }
 
@@ -309,10 +324,10 @@ export default function Form({ formData, elementTypes, formId }) {
 
   const [openFormEdit, setopenFormEdit] = useState(false);
 
-  function handleFormEditOpen(){
+  function handleFormEditOpen() {
     setopenFormEdit(true);
   }
-  function handleFormEditClose(){
+  function handleFormEditClose() {
     setopenFormEdit(false);
   }
 
@@ -334,7 +349,7 @@ export default function Form({ formData, elementTypes, formId }) {
               {
                 form.elements.length == 0
                 &&
-                <div className={`${styles.drag} ${overlayIndex=='droppable'? styles.overlay: ''}`}>
+                <div className={`${styles.drag} ${overlayIndex == 'droppable' ? styles.overlay : ''}`}>
                   <img src="/drag-and-drop.png" alt="" />
                 </div>
               }
@@ -349,34 +364,37 @@ export default function Form({ formData, elementTypes, formId }) {
             <div className={styles.buttons}>
               <Button variant='contained' color="success" disabled={!changes} onClick={saveChanges}>Save Changes</Button>
               {
-                form.form.public?
-                <Button variant={'contained'} onClick={()=>{publishForm(-1)}}>Unpublish Form</Button>
-                :
-                <Button variant={'contained'} onClick={()=>{publishForm(1)}}>Publish Form</Button>
+                form.form.public ?
+                  <Button variant={'contained'} onClick={() => { publishForm(-1) }}>Unpublish Form</Button>
+                  :
+                  <Button variant={'contained'} onClick={() => { publishForm(1) }}>Publish Form</Button>
               }
+              <Button onClick={deletePage} variant='contained' color='error'>
+                Delete Page
+              </Button>
             </div>
             {
-               selectElement == null
-               &&
+              selectElement == null
+              &&
               <ElementTypes elementTypes={elementTypes} />
             }
             {
               typeof selectElement == 'number'
               &&
               <div >
-                <Customize element={form.elements[selectElement]} index={selectElement} changeRequired={changeRequired} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd} deleteOption={deleteOption} deleteElement={deleteElement}/>
+                <Customize element={form.elements[selectElement]} index={selectElement} changeRequired={changeRequired} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd} deleteOption={deleteOption} deleteElement={deleteElement} />
               </div>
             }
           </div>
         </div>
       </DndContext>
 
-      <SuccessAlert open={open} handleClose={handleClose} msg={"Successfully published form"}/>
-      <SuccessAlert open={open2} handleClose={handleClose2} msg={"Successfully unpublished form"}/>
-      <SuccessAlert open={open3} handleClose={handleClose3} msg={"Successfully saved changes"}/>
+      <SuccessAlert open={open} handleClose={handleClose} msg={"Successfully published form"} />
+      <SuccessAlert open={open2} handleClose={handleClose2} msg={"Successfully unpublished form"} />
+      <SuccessAlert open={open3} handleClose={handleClose3} msg={"Successfully saved changes"} />
 
 
-      <FormEdit open={openFormEdit} handleFormEditOpen={handleFormEditOpen} handleFormEditClose={handleFormEditClose} form={form} setform={setform} setchanges={setchanges}/>
+      <FormEdit open={openFormEdit} handleFormEditOpen={handleFormEditOpen} handleFormEditClose={handleFormEditClose} form={form} setform={setform} setchanges={setchanges} />
     </>
 
   )

@@ -58,7 +58,7 @@ export default function SignIn() {
       console.log(response);
       const token = response.data.token;
 
-      setCookie('authToken', token, { path: '/', expires: new Date(Date.now() + 3600 * 1000) }); // Cookie expires in 1 hour
+      setCookie('authToken', token, { path: '/', expires: new Date(Date.now() + 3600 * 1000 * 24) }); // Cookie expires in 24 hours
 
       const decodedToken = jwt.decode(token);
       console.log(decodedToken);

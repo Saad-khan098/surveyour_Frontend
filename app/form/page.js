@@ -23,6 +23,6 @@ export default async function FormBuilder({ searchParams }) {
   var elementTypes = await fetch('http://localhost:3001/element/elementTypes').then(data => data.json());
 
   return (
-    <Form form={formData} elementTypes={elementTypes} formId={formId}></Form>
+    <Form formData={formData} elementTypes={elementTypes} formId={formId}></Form>
   )
 }

@@ -4,3 +4,12 @@
     align-items: center;
     gap: 10px;
 }
+.delete{
+    margin-top: 30px;
+}
+.confirmDelete{
+    margin-top: 30px;
+}
+.confirmDelete > p{
+    max-width: 300px;
+}

@@ -11,6 +11,8 @@ export default function FormEdit({open, handleFormEditOpen, handleFormEditClose,
 
     const [formName, setformName] = useState(form.form.name);
 
+    const [confirmDelete, setconfirmDelete] = useState(false);
+
   return (
     <>
       <Dialog
@@ -20,7 +22,6 @@ export default function FormEdit({open, handleFormEditOpen, handleFormEditClose,
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Use Google's location service?"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
@@ -41,6 +42,22 @@ export default function FormEdit({open, handleFormEditOpen, handleFormEditClose,
                     Change Name
                 </Button>
             </div>
+
+            <div className={styles.delete}>
+                <Button variant='contained' color='error' onClick={()=>{setconfirmDelete(true)}}>
+                  Delete Form
+                </Button>
+            </div>
+            
+            {
+              confirmDelete
+              &&
+              <div className={styles.confirmDelete}>  
+                <p>All your data including form elements and user responses will be lost. Are you sure you want to delete this form?</p>
+                <Button variant='contained' size="small">No</Button>
+                <Button variant='contained' size="small">Yes</Button>
+              </div>
+            }
         </DialogContent>
       </Dialog>
     </>

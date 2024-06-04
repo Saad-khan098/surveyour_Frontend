@@ -6,12 +6,12 @@ import { Chart as ChartJS, ArcElement, Tooltip, Legend } from 'chart.js';
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-const PieCard = ({ question, data }) => {
+const PieCard = ({data }) => {
   const chartData = {
     labels: data.labels,
     datasets: [
       {
-        data: data.values,
+        data: data.valuePercents,
         backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
         hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
       },
@@ -21,9 +21,6 @@ const PieCard = ({ question, data }) => {
   return (
     <Card variant="outlined" sx={{ marginBottom: 2, borderRadius: 2 }}>
       <CardContent>
-        <Typography variant="h6" component="div">
-          {question}
-        </Typography>
         <div style={{ width: '25%', margin: 'auto' }}>
           <Pie data={chartData} />
         </div>
