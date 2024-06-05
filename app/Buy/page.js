@@ -53,7 +53,7 @@ export default function Buy() {
             Authorization: `Bearer ${authToken}`
           }
         });
-        router.push(data.data.redirect)
+      router.push(data.data.redirect)
     }
     catch (e) {
       console.log(e);
@@ -64,17 +64,36 @@ export default function Buy() {
     <BaseLayout>
       <div className={styles.page}>
         <h1>Plans</h1>
+        <div className={styles.line}></div>
       </div>
 
       <div className={styles.plans}>
+        {
+          plans&&
+          <div className={styles.plan}>
+          <h2>Free</h2>
+          <img src="/free.png" alt="" />
+          <div className={styles.price}>
+            <h1>Free</h1>
+            <p>forever</p>
+          </div>
+
+          <p>You can create upto five forms for free</p>
+        </div>
+        }
         {
           plans &&
           plans.map(plan => {
             return (
               <div className={styles.plan}>
-                <h2>Premium Plan</h2>
-                <p>{plan.interval}</p>
-                <p>{plan.priceInCents}</p>
+                <h2>Premium</h2>
+                <img src="/crown.png" alt="" />
+                <div className={styles.price}>
+                  <h1>${plan.priceInCents / 100}</h1>
+                  <p>per {plan.interval}</p>
+                </div>
+
+                <p>Upgrade To Premium and create as many forms you like</p>
                 <Button
                   variant='contained'
                   onClick={() => {

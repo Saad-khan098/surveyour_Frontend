@@ -12,8 +12,8 @@ const PieCard = ({data }) => {
     datasets: [
       {
         data: data.valuePercents,
-        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
-        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+        backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#7D0DC3'],
+        hoverBackgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#570987'],
       },
     ],
   };

@@ -233,6 +233,10 @@ export default function Statistics() {
                     <Pagination
                         onChange={async (e, newPage) => {
                             await getForm(newPage);
+                            window.scrollTo({
+                                top: 0,
+                                behavior: "smooth"
+                              });
                             setpage(parseInt(newPage));
                         }}
                         count={form.form.pages}

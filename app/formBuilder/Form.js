@@ -21,8 +21,10 @@ import { Button } from '@mui/material';
 import SuccessAlert from '../Components/SuccessAlert';
 import EditIcon from '@mui/icons-material/Edit';
 import FormEdit from './FormEdit';
+import ConfirmDeletePage from './ConfirmDeletePage';
+import UnSaveedChanges from './UnSavedChanges';
 
-export default function Form({ formData, elementTypes, formId }) {
+export default function Form({elementTypes, formId }) {
 
 
 
@@ -32,7 +34,7 @@ export default function Form({ formData, elementTypes, formId }) {
   const router = useRouter();
 
 
-  const [form, setform] = useState(formData);
+  const [form, setform] = useState(null);
   const [overlayIndex, setoverlayIndex] = useState(null);
   const [selectElement, setselectElement] = useState(null);
   const [newId, setnewId] = useState(1);
@@ -203,6 +205,7 @@ export default function Form({ formData, elementTypes, formId }) {
   async function getForm(pageNo) {
     try {
       console.log('getting form');
+      console.log(pageNo);
       const data = await axios.get(`http://localhost:3001/form/${formId}?page=${pageNo}`, {
         headers: {
           Authorization: `Bearer ${authToken}`
@@ -216,12 +219,31 @@ export default function Form({ formData, elementTypes, formId }) {
     }
   }
 
+  useEffect(()=>{
+    getForm(page);
+  }, [])
+
+  const [unsavedChanges, setunsavedChanges] = useState(false)
+  const [takeToPage, settakeToPage] = useState(null);
+
+  function openUnSavedChanges(){
+    setunsavedChanges(true);
+  }
+  function closeUnSavedChanges(){
+    setunsavedChanges(false);
+  }
 
   function handlePageChange(e) {
     if (page == e.target.innerText) return;
-    getForm(e.target.innerText)
-    setpage(e.target.innerText);
 
+    if(changes){
+      openUnSavedChanges();
+      settakeToPage(parseInt(e.target.innerText))
+    }
+    else{
+      getForm(e.target.innerText)
+      setpage(e.target.innerText);
+    }
   }
   function addPage() {
     axios.put(`http://localhost:3001/form/addPage/${formId}`,
@@ -238,8 +260,7 @@ export default function Form({ formData, elementTypes, formId }) {
     })
   }
 
-  async function saveChanges() {
-    console.log('saving changes');
+  async function saveChanges(page) {
     const data = await axios.put(`http://localhost:3001/form/save/${formId}`,
       {
         form: form,
@@ -331,6 +352,18 @@ export default function Form({ formData, elementTypes, formId }) {
     setopenFormEdit(false);
   }
 
+
+
+  const [confirmDeletePage, setconfirmDeletePage] = useState(false)
+
+  function handleConfirmDeleteOpen() {
+    setconfirmDeletePage(true);
+  }
+  function handleConfirmDeleteClose() {
+    setconfirmDeletePage(false);
+  }
+
+  
   if (!form) return;
 
   return (
@@ -357,19 +390,23 @@ export default function Form({ formData, elementTypes, formId }) {
             </Droppable>
             <div className={styles.pageination}>
               <Pagination count={form.form.pages} page={parseInt(page)} onChange={handlePageChange} hidePrevButton hideNextButton />
-              <div className={styles.new} onClick={addPage}>+</div>
+              <div className={styles.new} onClick={addPage} style={{cursor: 'pointer'}}>+</div>
             </div>
           </div>
           <div className={styles.right}>
             <div className={styles.buttons}>
-              <Button variant='contained' color="success" disabled={!changes} onClick={saveChanges}>Save Changes</Button>
+              <Button variant='contained' color="success" disabled={!changes} onClick={()=>{saveChanges(page)}}>Save Changes</Button>
+              <Button variant='contained' color="success" disabled={changes} onClick={()=>{
+                console.log('going back');
+                router.push(`/viewForm?formId=${formId}`)
+              }}>Go Back</Button>
               {
                 form.form.public ?
                   <Button variant={'contained'} onClick={() => { publishForm(-1) }}>Unpublish Form</Button>
                   :
                   <Button variant={'contained'} onClick={() => { publishForm(1) }}>Publish Form</Button>
               }
-              <Button onClick={deletePage} variant='contained' color='error'>
+              <Button onClick={handleConfirmDeleteOpen} variant='contained' color='error'>
                 Delete Page
               </Button>
             </div>
@@ -382,7 +419,10 @@ export default function Form({ formData, elementTypes, formId }) {
               typeof selectElement == 'number'
               &&
               <div >
-                <Customize element={form.elements[selectElement]} index={selectElement} changeRequired={changeRequired} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd} deleteOption={deleteOption} deleteElement={deleteElement} />
+                {
+                  form?.elements[selectElement]&&
+                  <Customize element={form.elements[selectElement]} index={selectElement} changeRequired={changeRequired} changeName={changeName} changeOption={changeOption} optionAdd={optionAdd} deleteOption={deleteOption} deleteElement={deleteElement} />
+                }
               </div>
             }
           </div>
@@ -395,6 +435,8 @@ export default function Form({ formData, elementTypes, formId }) {
 
 
       <FormEdit open={openFormEdit} handleFormEditOpen={handleFormEditOpen} handleFormEditClose={handleFormEditClose} form={form} setform={setform} setchanges={setchanges} />
+      <ConfirmDeletePage open={confirmDeletePage} handleClose={handleConfirmDeleteClose} deletePage={deletePage}/>
+      <UnSaveedChanges open={unsavedChanges} handleclose={closeUnSavedChanges} page={page} setpage={setpage} saveChanges={saveChanges} getForm={getForm} takeToPage={takeToPage}/>
     </>
 
   )

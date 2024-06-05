@@ -11,17 +11,15 @@ import jwt from 'jsonwebtoken';
 import FormTable from './FormTable';
 import IconButton from '@mui/material/IconButton';
 import Avatar from '@mui/material/Avatar';
-
-
-
-
-
+import Pagination from '@mui/material/Pagination';
 
 export default function page() {
   const router = useRouter();
 
   const authToken = getCookie('authToken');
+  console.log(authToken);
   const user = jwt.decode(authToken);
+  console.log(user);
 
   if (!user) {
     router.push('/login');
@@ -32,21 +30,25 @@ export default function page() {
 
   const [forms, setforms] = useState(null);
 
-  const getForms = async function () {
+  const [page, setpage] = useState(1);
+
+  const getForms = async function (page) {
+    console.log('getting forms');
+    console.log(page);
     try {
-      const recipes = await axios.get('http://localhost:3001/form/all', {
+      const data = await axios.get(`http://localhost:3001/form/all?page=${page}`, {
         headers: {
           Authorization: `Bearer ${authToken}`
         }
       });
-      setforms(recipes.data);
+      setforms(data.data);
     }
     catch (e) {
       console.log(e);
     }
   }
   useEffect(() => {
-    getForms();
+    getForms(page);
   }, [])
 
   console.log({ forms });
@@ -56,10 +58,15 @@ export default function page() {
 
         <div className={styles.welcome}>
           <h1>Welcome </h1>
-          <IconButton sx={{ p: 0 }}>
-            <Avatar>{user.name[0].toUpperCase()}</Avatar>
-          </IconButton>
-          <h1>{user.name}</h1>
+          {
+            user.name &&
+            <>
+              <IconButton sx={{ p: 0 }}>
+                <Avatar>{user.name[0].toUpperCase()}</Avatar>
+              </IconButton>
+              <h1>{user.name}</h1>
+            </>
+          }
         </div>
 
 
@@ -73,7 +80,19 @@ export default function page() {
           <div className={styles.body}>
             {
               forms &&
-              <FormTable forms={forms.forms} />
+              <>
+                <FormTable forms={forms.forms} />
+                <Pagination
+                sx={{marginTop: '20px'}}
+                  count={Math.ceil(forms.pagination.total / forms.pagination.perPage)}
+                  page={page}
+                  onChange={async (e, newPage) => {
+                    await getForms(newPage);
+                    setpage(newPage);
+                  }}
+                />
+              </>
+
             }
           </div>
         </section>

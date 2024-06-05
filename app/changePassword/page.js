@@ -17,54 +17,52 @@ import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import jwt from 'jsonwebtoken';
 import { useRouter } from 'next/navigation';
+import getCookie from '@/utils/getCookie'
 
-
-
-// TODO remove, this demo shouldn't need to reset the theme.
 
 const defaultTheme = createTheme();
 
 export default function SignIn() {
 
+  const authToken = getCookie('authToken');
+
+
   const router = useRouter();
-  const [, setCookie] = useCookies(['authToken']);
 
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
     let obj = {
-      email: data.get('email'),
       password: data.get('password'),
+      newPassword: data.get('new-password')
     }
-
+    console.log(obj);
     try {
 
-      let response = await axios.post('http://localhost:3001/auth/login', { "email": obj.email, "password": obj.password })
+      let response = await axios.post('http://localhost:3001/auth/changePassword',
+        { "oldPassword": obj.password, 'newPassword': obj.newPassword },
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`
+          }
+        }
+      )
       console.log(response);
-      const token = response.data.token;
 
-      setCookie('authToken', token, { path: '/', expires: new Date(Date.now() + 3600 * 1000 * 24) }); // Cookie expires in 24 hours
-
-      const decodedToken = jwt.decode(token);
-      console.log(decodedToken);
-
-      router.push('/Dashboard');
+      router.push('/login');
     }
 
-    catch(error){
+    catch (error) {
       console.log('skjsdfndjk');
       console.log(error);
-      if(error.response.status == 404){
-          alert('wrong email')
+      if (error.response.status == 404) {
+        alert('wrong email')
       }
-      if(error.response.status == 401){
-          alert('wrong password')
+      if (error.response.status == 401) {
+        alert('wrong password')
       }
     }
-
-
-
   };
 
   return (
@@ -83,19 +81,9 @@ export default function SignIn() {
             <LockOutlinedIcon />
           </Avatar>
           <Typography component="h1" variant="h5">
-            Sign in
+            Change Password
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
-              label="Email Address"
-              name="email"
-              autoComplete="email"
-              autoFocus
-            />
             <TextField
               margin="normal"
               required
@@ -105,6 +93,15 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+            />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="new-password"
+              label="new-password"
+              type="password"
+              id="new-password"
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}
@@ -116,7 +113,7 @@ export default function SignIn() {
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Sign In
+              Change
             </Button>
             <Grid container>
               <Grid item xs>

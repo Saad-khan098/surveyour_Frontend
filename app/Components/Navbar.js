@@ -13,33 +13,32 @@ import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import getCookie from '@/utils/getCookie';
-import jwt from 'jsonwebtoken'
-import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import jwt from 'jsonwebtoken';
 import { useCookies } from 'react-cookie';
 import { useRouter } from 'next/navigation';
 
-
-const pages = [{name: 'Dashboard', link: 'Dashboard'}, {name: 'Buy', link: 'Buy'}];
-const settings = [{name: 'Change Password', link: 'changePassword'},{name: 'Logout', action: 'logout'}];
+const pages = [{ name: 'Dashboard', link: 'Dashboard' }, { name: 'Buy', link: 'Buy' }];
+const settings = [{ name: 'Change Password', link: 'changePassword' }, { name: 'Logout', action: 'logout' }];
 
 function ResponsiveAppBar() {
   const router = useRouter();
   const [cookies, setCookie, removeCookie] = useCookies(['authToken']);
-
-
-  const authToken = getCookie('authToken');
-  let user = null;
-
-  if(authToken){
-    user = jwt.decode(authToken);
-  } 
-
+  const [user, setUser] = React.useState(null);
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+
+  React.useEffect(() => {
+    const authToken = getCookie('authToken');
+    if (authToken) {
+      const decodedUser = jwt.decode(authToken);
+      setUser(decodedUser);
+    }
+  }, []);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -105,10 +104,10 @@ function ResponsiveAppBar() {
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page.name} onClick={()=>{
+                <MenuItem key={page.name} onClick={() => {
                   handleCloseNavMenu();
                   router.push('/' + page.link);
-                  }}>
+                }}>
                   <Typography textAlign="center">{page.name}</Typography>
                 </MenuItem>
               ))}
@@ -138,7 +137,7 @@ function ResponsiveAppBar() {
               <Button
                 key={page.name}
                 onClick={
-                  ()=>{
+                  () => {
                     handleCloseNavMenu();
                     router.push('/' + page.link);
                   }
@@ -152,13 +151,32 @@ function ResponsiveAppBar() {
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
-              {
-                user&&
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar>{user.name[0].toUpperCase()}</Avatar>
-                </IconButton>
-              }
+              {user === null ? (
+                // Placeholder for server-side rendering
+                <Box sx={{ width: 56, height: 56 }}></Box>
+              ) : (
+                <>
+                  {user.roles.includes('premium') ? (
+                    <Button size='small' variant='contained' color='secondary' sx={{ marginRight: '10px' }}>
+                      Premium
+                    </Button>
+                  ) : (
+                    <Button size='small' variant='contained' color='secondary' sx={{ marginRight: '10px' }}
+                      onClick={() => {
+                        router.push('/Buy')
+                      }}
+                    >
+                      Free
+                    </Button>
+                  )}
+
+                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    <Avatar>{user.name[0].toUpperCase()}</Avatar>
+                  </IconButton>
+                </>
+              )}
             </Tooltip>
+
             <Menu
               sx={{ mt: '45px' }}
               id="menu-appbar"
@@ -176,13 +194,13 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting.name} onClick={()=>{
-                  if(setting.action == 'logout'){
+                <MenuItem key={setting.name} onClick={() => {
+                  if (setting.action == 'logout') {
                     removeCookie('authToken');
                     router.push('/login');
                   }
-                  handleCloseUserMenu()
-                  }}>
+                  handleCloseUserMenu();
+                }}>
                   <Typography textAlign="center">{setting.name}</Typography>
                 </MenuItem>
               ))}
@@ -193,4 +211,5 @@ function ResponsiveAppBar() {
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;

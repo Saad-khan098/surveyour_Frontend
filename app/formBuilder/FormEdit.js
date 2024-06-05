@@ -6,8 +6,30 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import { Input,Button } from '@mui/material';
 import styles from './FormEdit.module.css'
+import getCookie from '@/utils/getCookie'
+import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 export default function FormEdit({open, handleFormEditOpen, handleFormEditClose, form, setform, setchanges}) {
+
+  const authToken = getCookie('authToken');
+
+  const router = useRouter();
+
+  async function deleteForm() {
+    console.log(form);
+    try {
+      const data = await axios.delete(`http://localhost:3001/form/deleteForm/${form.form._id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`
+        }
+      })
+      router.push('/Dashboard');
+    }
+    catch (e) {
+      console.log(e);
+    }
+  }
 
     const [formName, setformName] = useState(form.form.name);
 
@@ -54,8 +76,8 @@ export default function FormEdit({open, handleFormEditOpen, handleFormEditClose,
               &&
               <div className={styles.confirmDelete}>  
                 <p>All your data including form elements and user responses will be lost. Are you sure you want to delete this form?</p>
-                <Button variant='contained' size="small">No</Button>
-                <Button variant='contained' size="small">Yes</Button>
+                <Button variant='contained' size="small" onClick={()=>{handleFormEditClose(); setconfirmDelete(false)}}>No</Button>
+                <Button variant='contained' size="small" onClick={deleteForm}>Yes</Button>
               </div>
             }
         </DialogContent>

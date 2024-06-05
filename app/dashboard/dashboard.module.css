@@ -8,6 +8,7 @@
     display: flex;
     gap: 10px;
     align-items: center;
+    flex-wrap: wrap;
 }
 .page .welcome h1:first-of-type{
     margin-right: 30px;
@@ -47,6 +48,7 @@
 }
 .page .createForm{
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 15px;
     margin-top: 30px;

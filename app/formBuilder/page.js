@@ -24,16 +24,12 @@ export default async function FormBuilder({ searchParams }) {
     }
   };
 
-  const formDataResponse = await fetch(`http://localhost:3001/form/${formId}`, requestOptions);
-  if (formDataResponse.status === 401) {
-    redirect('/login');
-  }
-  const formData = await formDataResponse.json();
+ 
   var elementTypes = await fetch('http://localhost:3001/element/elementTypes').then(data => data.json());
 
   return (
     <BaseLayout>
-      <Form formData={formData} elementTypes={elementTypes} formId={formId}></Form>
+      <Form elementTypes={elementTypes} formId={formId}></Form>
     </BaseLayout>
   )
 }

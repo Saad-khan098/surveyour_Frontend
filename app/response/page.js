@@ -28,27 +28,31 @@ export default function Response() {
 
     const [page, setPage] = useState(1);
     const [response, setResponse] = useState(null);
+    console.log(response);
 
     const getResponse = async (page) => {
+        console.log('getting resposne');
+        console.log(page);
         try {
             const data = await axios.get(`http://localhost:3001/response/${responseId}?page=${page}`, {
                 headers: {
                     Authorization: `Bearer ${authToken}`
                 }
             });
+            console.log(data);
             setResponse(data.data);
         } catch (e) {
             console.log(e);
         }
     }
 
-    const nextPage = () => {
-        getResponse(page + 1);
+    const nextPage = async () => {
+        await getResponse(page + 1);
         setPage(prev => prev + 1);
     }
 
-    const prevPage = () => {
-        getResponse(page - 1);
+    const prevPage = async () => {
+        await getResponse(page - 1);
         setPage(prev => prev - 1);
     }
 
